@@ -12,19 +12,20 @@
     body {
       font-family: 'Quicksand', sans-serif;
       background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+      background-image: url('https://www.transparenttextures.com/patterns/flower.png');
       color: #333;
       min-height: 100vh;
-      padding: 30px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      background-image: url('https://www.transparenttextures.com/patterns/flower.png');
+      padding: 20px;
+      overflow-x: hidden;
     }
 
     header {
       margin-bottom: 40px;
       text-align: center;
-      animation: fadeIn 1.5s ease;
+      animation: fadeIn 1.5s ease forwards;
       color: white;
       text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
@@ -38,20 +39,33 @@
       font-weight: 500;
     }
 
+    .animated-hashtag {
+      margin-top: 10px;
+      font-size: 1rem;
+      color: #ffd700;
+      animation: scaleIn 1.2s ease-in-out forwards;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes floating {
       0% { transform: translateY(0px); }
       50% { transform: translateY(-10px); }
       100% { transform: translateY(0px); }
     }
-
-    @keyframes slideFade {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes scaleIn {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
     .profile-card {
@@ -59,7 +73,7 @@
       border-radius: 25px;
       box-shadow: 0 12px 35px rgba(0,0,0,0.15);
       padding: 30px;
-      max-width: 380px;
+      max-width: 400px;
       text-align: center;
       margin-bottom: 40px;
       animation: floating 4s ease-in-out infinite;
@@ -81,7 +95,7 @@
     .profile-card p {
       font-weight: 500;
       color: #555;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .whatsapp-btn {
@@ -94,6 +108,7 @@
       font-weight: 600;
       transition: 0.3s ease;
       box-shadow: 0 8px 18px rgba(233,30,99,0.4);
+      animation: scaleIn 1.5s ease;
     }
     .whatsapp-btn:hover {
       background: #c2185b;
@@ -106,9 +121,10 @@
       justify-content: center;
       max-width: 900px;
       margin-bottom: 50px;
+      animation: slideInLeft 1s ease forwards;
     }
     .skill {
-      background: #ffffffbb;
+      background: #ffffffcc;
       padding: 10px 22px;
       border-radius: 30px;
       color: #c2185b;
@@ -121,11 +137,6 @@
       background: #c2185b;
       color: white;
       animation: bounce 0.5s;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
     }
 
     .projects {
@@ -141,7 +152,7 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       padding: 25px;
       transition: 0.3s ease;
-      animation: slideFade 1.2s ease forwards;
+      animation: fadeIn 1.5s ease;
     }
     .project-card:hover {
       transform: translateY(-6px);
@@ -176,7 +187,7 @@
       font-size: 1rem;
       margin-top: auto;
       padding: 25px 10px;
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(0, 0, 0, 0.15);
       width: 100%;
       border-radius: 20px;
       box-shadow: 0 -2px 15px rgba(0,0,0,0.1);
@@ -202,6 +213,7 @@
 <header>
   <h1>Riska Ockti Nurhasanah</h1>
   <p>Creative Thinker | Graphic Designer</p>
+  <div class="animated-hashtag">#FreePalestine ✊ #GarudaCloudIndonesia 🇮🇩</div>
 </header>
 
 <div class="profile-card">
@@ -228,19 +240,20 @@
   </div>
   <div class="project-card">
     <h3>Creative Vibes</h3>
-    <p>Platform media kreatif yang membahas lifestyle, perempuan, dan teknologi masa depan.</p>
+    <p>Media kreatif yang membahas gaya hidup, perempuan, dan teknologi masa depan.</p>
     <a href="#">Kunjungi</a>
   </div>
   <div class="project-card">
     <h3>Blog Riska Talks</h3>
-    <p>Blog pribadi Riska tentang pengalaman, motivasi, dan edukasi digital untuk remaja.</p>
+    <p>Blog pribadi tentang pengalaman hidup, semangat hidup, dan edukasi digital.</p>
     <a href="#">Baca Blog</a>
   </div>
 </section>
 
 <div class="footer">
-  © 2025 <strong>Riska Ockti Nurhasanah</strong>. Designed with ❤ and creativity.<br />
-  Powered by <strong>Xera Computing ID</strong>
+  © 2025 <strong>Riska Ockti Nurhasanah</strong>.<br/>
+  Designed with ❤ dan dedikasi.<br/>
+  Powered by <strong>Xera Computing ID</strong> — #FreePalestine ✊
 </div>
 
 </body>
