@@ -1,104 +1,138 @@
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const cartItemsContainer = document.getElementById('cart-items-container');
-    const cartTotalEl = document.querySelector('.cart-total');
-    const checkoutBtn = document.querySelector('.checkout-btn');
-    const customerNameInput = document.getElementById('customer-name');
-    const cart = [];
-
-    function updateCartUI() {
-      cartItemsContainer.innerHTML = '';
-      let total = 0;
-
-      if (cart.length === 0) {
-        cartItemsContainer.innerHTML = '<p class="empty-cart-message">Anda Belum Memasukan Pesanan</p>';
-        checkoutBtn.disabled = true;
-        cartTotalEl.textContent = 'Rp. 0';
-        return;
-      }
-
-      cart.forEach(item => {
-        total += item.price * item.quantity;
-
-        const itemEl = document.createElement('div');
-        itemEl.className = 'cart-item';
-        itemEl.innerHTML = `
-          <div class="cart-item-image">
-            <img src="${item.image}" alt="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
-          </div>
-          <div class="cart-item-info">
-            <h4>${item.name}</h4>
-            <div class="cart-item-price">Rp. ${item.price.toLocaleString()}</div>
-          </div>
-          <div class="cart-item-actions">
-            <button class="remove-item" data-id="${item.name}"><i class="fas fa-minus"></i></button>
-            <span class="item-quantity">${item.quantity}</span>
-            <button class="add-item" data-id="${item.name}"><i class="fas fa-plus"></i></button>
-          </div>
-        `;
-        cartItemsContainer.appendChild(itemEl);
-      });
-
-      cartTotalEl.textContent = `Rp. ${total.toLocaleString()}`;
-      checkoutBtn.disabled = false;
+<!DOCTYPE html>
+<html lang="en" x-data="dropdown">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kagumi Coffee</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
     }
-
-    function findItem(name) {
-      return cart.find(item => item.name === name);
+    .header {
+      background: #333;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .products-heading {
+      text-align: center;
+      margin: 2rem 0;
+      animation: fadeInDown 1s;
+    }
+    .products-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      padding: 1rem 2rem;
+    }
+    .product-box {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      text-align: center;
+      transition: transform 0.3s ease;
+      animation: fadeInUp 0.8s;
+    }
+    .product-box:hover {
+      transform: translateY(-5px);
+    }
+    .product-box img {
+      width: 100%;
+      border-radius: 8px;
+      object-fit: cover;
+      max-height: 180px;
+    }
+    .product-box h3 {
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    .price {
+      color: #e67e22;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    .product-buttons {
+      margin-top: 0.5rem;
+    }
+    .add-to-cart {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: #27ae60;
+      color: white;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .add-to-cart:hover {
+      background: #219150;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <a href="#" class="logo">KAGUMI <span>CAFFEE</span></a>
+    <div class="icons">
+      <div class="fas fa-shopping-cart" id="cart-btn"></div>
+    </div>
+  </header>
 
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-      button.addEventListener('click', e => {
-        e.preventDefault();
-        const productBox = e.target.closest('.product-box');
-        const name = productBox.querySelector('h3').textContent;
-        const price = parseInt(productBox.querySelector('.price').textContent.replace(/[^0-9]/g, ''));
-        const image = productBox.querySelector('img').src;
+  <section id="products">
+    <div class="products-heading">
+      <h2 class="animate__animated animate__fadeInDown">Our Products</h2>
+    </div>
+    <div class="products-container">
+      <template x-for="product in products" :key="product.name">
+        <div class="product-box animate__animated animate__fadeInUp">
+          <img :src="product.image" :alt="product.name">
+          <h3 x-text="product.name"></h3>
+          <span class="price" x-text="rupiah(product.price)"></span>
+          <div class="product-buttons">
+            <a href="#" class="add-to-cart">Tambah</a>
+          </div>
+        </div>
+      </template>
+    </div>
+  </section>
 
-        let item = findItem(name);
-        if (item) {
-          item.quantity++;
-        } else {
-          cart.push({ name, price, image, quantity: 1 });
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('dropdown', () => ({
+        products: [
+          { name: 'Caramel Latte', price: 25000, image: 'https://source.unsplash.com/400x300/?latte' },
+          { name: 'Espresso Shot', price: 15000, image: 'https://source.unsplash.com/400x300/?espresso' },
+          { name: 'Vanilla Frappe', price: 28000, image: 'https://source.unsplash.com/400x300/?frappe' },
+          { name: 'Matcha Latte', price: 26000, image: 'https://source.unsplash.com/400x300/?matcha' },
+          { name: 'Americano', price: 20000, image: 'https://source.unsplash.com/400x300/?americano' },
+          { name: 'Cappuccino', price: 24000, image: 'https://source.unsplash.com/400x300/?cappuccino' },
+          { name: 'Mocha', price: 27000, image: 'https://source.unsplash.com/400x300/?mocha' },
+          { name: 'Thai Tea', price: 22000, image: 'https://source.unsplash.com/400x300/?thaitea' },
+          { name: 'Lemon Tea', price: 18000, image: 'https://source.unsplash.com/400x300/?lemontea' },
+          { name: 'Chocolate Shake', price: 25000, image: 'https://source.unsplash.com/400x300/?chocolate' },
+          { name: 'Strawberry Smoothie', price: 29000, image: 'https://source.unsplash.com/400x300/?strawberry' },
+          { name: 'Green Tea Latte', price: 26000, image: 'https://source.unsplash.com/400x300/?greentea' },
+          { name: 'Cookies & Cream', price: 30000, image: 'https://source.unsplash.com/400x300/?cookies' },
+          { name: 'Black Coffee', price: 17000, image: 'https://source.unsplash.com/400x300/?blackcoffee' },
+          { name: 'Hazelnut Latte', price: 27000, image: 'https://source.unsplash.com/400x300/?hazelnut' },
+        ],
+        rupiah(val) {
+          return 'Rp. ' + val.toLocaleString();
         }
-        updateCartUI();
-      });
+      }));
     });
-
-    cartItemsContainer.addEventListener('click', e => {
-      if (e.target.closest('button')) {
-        const btn = e.target.closest('button');
-        const name = btn.dataset.id;
-        const item = findItem(name);
-        if (!item) return;
-
-        if (btn.classList.contains('add-item')) {
-          item.quantity++;
-        } else if (btn.classList.contains('remove-item')) {
-          item.quantity--;
-          if (item.quantity <= 0) {
-            const index = cart.indexOf(item);
-            cart.splice(index, 1);
-          }
-        }
-        updateCartUI();
-      }
-    });
-
-    checkoutBtn.addEventListener('click', () => {
-      const name = customerNameInput.value.trim();
-      if (!name) {
-        alert('Silakan masukkan nama Anda terlebih dahulu.');
-        return;
-      }
-
-      const orderLines = cart.map(item => `${item.quantity}x ${item.name}`).join('%0A');
-      const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-      const message = `Halo Kak, saya *${name}* ingin memesan:%0A${orderLines}%0A%0ATotal: Rp. ${total.toLocaleString()}`;
-      const whatsappURL = `https://wa.me/62895337372269?text=${message}`;
-
-      window.open(whatsappURL, '_blank');
-    });
-  });
-</script>
+  </script>
+</body>
+</html>
