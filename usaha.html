@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Usaha Example</title>
+  <title>Kagumi Coffee</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap">
@@ -14,6 +14,7 @@
       margin: 0;
       padding: 0;
       background: #f9f9f9;
+      overflow-x: hidden;
     }
     .header {
       background: #333;
@@ -22,6 +23,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      animation: fadeInDown 1s;
     }
     .logo {
       font-size: 1.5rem;
@@ -30,13 +32,13 @@
     .products-heading {
       text-align: center;
       margin: 2rem 0;
-      animation: fadeInDown 1s;
     }
     .products-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1.5rem;
       padding: 1rem 2rem;
+      animation: fadeInUp 1s;
     }
     .product-box {
       background: white;
@@ -45,7 +47,7 @@
       padding: 1rem;
       text-align: center;
       transition: transform 0.3s ease;
-      animation: fadeInUp 0.8s;
+      position: relative;
     }
     .product-box:hover {
       transform: translateY(-5px);
@@ -80,6 +82,20 @@
     .add-to-cart:hover {
       background: #219150;
     }
+    .cart-fly {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      font-size: 2rem;
+      z-index: 9999;
+      animation: flyCart 1s ease-in-out;
+    }
+    @keyframes flyCart {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+      50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    }
     .checkout {
       position: fixed;
       bottom: 20px;
@@ -91,6 +107,7 @@
       border-radius: 10px;
       font-size: 1rem;
       cursor: pointer;
+      animation: fadeInRight 1s;
     }
     .checkout:hover {
       background: #219150;
@@ -98,8 +115,11 @@
   </style>
 </head>
 <body x-init="cart = []">
+  <div class="cart-fly animate__animated animate__fadeOut" x-show="showCartIcon" x-transition.duration.1000ms>
+    <i class="fas fa-shopping-cart"></i>
+  </div>
   <header class="header">
-    <a href="#" class="logo">Example <span>Usaha</span></a>
+    <a href="#" class="logo animate__animated animate__fadeInLeft">KAGUMI <span>CAFFEE</span></a>
   </header>
 
   <section id="products">
@@ -108,19 +128,19 @@
     </div>
     <div class="products-container">
       <template x-for="product in products" :key="product.name">
-        <div class="product-box animate__animated animate__fadeInUp">
+        <div class="product-box animate__animated animate__zoomIn">
           <img :src="product.image" :alt="product.name">
           <h3 x-text="product.name"></h3>
           <span class="price" x-text="rupiah(product.price)"></span>
           <div class="product-buttons">
-            <a href="#" class="add-to-cart" @click.prevent="cart.push(product)">Tambah</a>
+            <a href="#" class="add-to-cart" @click.prevent="addToCart(product)">Tambah</a>
           </div>
         </div>
       </template>
     </div>
   </section>
 
-  <button class="checkout" @click="checkout()">Beli</button>
+  <button class="checkout" @click="checkout()">Beli via WhatsApp</button>
 
   <script>
     document.addEventListener('alpine:init', () => {
@@ -143,8 +163,16 @@
           { name: 'Hazelnut Latte', price: 27000, image: 'https://source.unsplash.com/400x300/?hazelnut' },
         ],
         cart: [],
+        showCartIcon: false,
         rupiah(val) {
           return 'Rp. ' + val.toLocaleString();
+        },
+        addToCart(product) {
+          this.cart.push(product);
+          this.showCartIcon = true;
+          setTimeout(() => {
+            this.showCartIcon = false;
+          }, 1000);
         },
         checkout() {
           const nama = prompt("Masukkan nama Anda:");
