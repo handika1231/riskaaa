@@ -1,0 +1,104 @@
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cartItemsContainer = document.getElementById('cart-items-container');
+    const cartTotalEl = document.querySelector('.cart-total');
+    const checkoutBtn = document.querySelector('.checkout-btn');
+    const customerNameInput = document.getElementById('customer-name');
+    const cart = [];
+
+    function updateCartUI() {
+      cartItemsContainer.innerHTML = '';
+      let total = 0;
+
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = '<p class="empty-cart-message">Anda Belum Memasukan Pesanan</p>';
+        checkoutBtn.disabled = true;
+        cartTotalEl.textContent = 'Rp. 0';
+        return;
+      }
+
+      cart.forEach(item => {
+        total += item.price * item.quantity;
+
+        const itemEl = document.createElement('div');
+        itemEl.className = 'cart-item';
+        itemEl.innerHTML = `
+          <div class="cart-item-image">
+            <img src="${item.image}" alt="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+          </div>
+          <div class="cart-item-info">
+            <h4>${item.name}</h4>
+            <div class="cart-item-price">Rp. ${item.price.toLocaleString()}</div>
+          </div>
+          <div class="cart-item-actions">
+            <button class="remove-item" data-id="${item.name}"><i class="fas fa-minus"></i></button>
+            <span class="item-quantity">${item.quantity}</span>
+            <button class="add-item" data-id="${item.name}"><i class="fas fa-plus"></i></button>
+          </div>
+        `;
+        cartItemsContainer.appendChild(itemEl);
+      });
+
+      cartTotalEl.textContent = `Rp. ${total.toLocaleString()}`;
+      checkoutBtn.disabled = false;
+    }
+
+    function findItem(name) {
+      return cart.find(item => item.name === name);
+    }
+
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+      button.addEventListener('click', e => {
+        e.preventDefault();
+        const productBox = e.target.closest('.product-box');
+        const name = productBox.querySelector('h3').textContent;
+        const price = parseInt(productBox.querySelector('.price').textContent.replace(/[^0-9]/g, ''));
+        const image = productBox.querySelector('img').src;
+
+        let item = findItem(name);
+        if (item) {
+          item.quantity++;
+        } else {
+          cart.push({ name, price, image, quantity: 1 });
+        }
+        updateCartUI();
+      });
+    });
+
+    cartItemsContainer.addEventListener('click', e => {
+      if (e.target.closest('button')) {
+        const btn = e.target.closest('button');
+        const name = btn.dataset.id;
+        const item = findItem(name);
+        if (!item) return;
+
+        if (btn.classList.contains('add-item')) {
+          item.quantity++;
+        } else if (btn.classList.contains('remove-item')) {
+          item.quantity--;
+          if (item.quantity <= 0) {
+            const index = cart.indexOf(item);
+            cart.splice(index, 1);
+          }
+        }
+        updateCartUI();
+      }
+    });
+
+    checkoutBtn.addEventListener('click', () => {
+      const name = customerNameInput.value.trim();
+      if (!name) {
+        alert('Silakan masukkan nama Anda terlebih dahulu.');
+        return;
+      }
+
+      const orderLines = cart.map(item => `${item.quantity}x ${item.name}`).join('%0A');
+      const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+      const message = `Halo Kak, saya *${name}* ingin memesan:%0A${orderLines}%0A%0ATotal: Rp. ${total.toLocaleString()}`;
+      const whatsappURL = `https://wa.me/62895337372269?text=${message}`;
+
+      window.open(whatsappURL, '_blank');
+    });
+  });
+</script>
